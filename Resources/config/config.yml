@@ -1,0 +1,8 @@
+services:
+  meisa_rating:
+      class: Meisa\RatingBundle\Extension\RatingTwigExtension
+      arguments:
+            em: "@doctrine.orm.entity_manager"
+            container: "@service_container"
+      tags:
+          - { name: twig.extension }
