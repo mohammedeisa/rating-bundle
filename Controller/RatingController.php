@@ -34,6 +34,7 @@ class RatingController extends Controller
      */
     public function voteAction()
     {
+        $translator = $this->get('translator');
         $units = 5;
         $em = $this->getDoctrine()->getManager();
         $request = $this->container->get('request');
@@ -51,12 +52,13 @@ class RatingController extends Controller
         }
         if ($vote_sent > $units) die("Sorry, vote appears to be invalid."); // kill the script because normal users will never see this.
 
-//connecting to the database to get some information
+//connecting to the database to get some informationvar_dump(unserialize($data));
+
         $checkIP = unserialize($rating->getusedIps());
         $count = $rating->getTotalVotes(); //how many votes total
         $current_rating = $rating->getTotalValue(); //total number of rating added together and stored
         $sum = $vote_sent + $current_rating; // add together the current vote value and the total vote value
-        $tense = ($count == 1) ? "vote" : "votes"; //plural form votes/vote
+        $tense = ($count == 1) ?  $translator->trans('vote') :  $translator->trans('votes'); //plural form votes/vote
 
 // checking to see if the first vote has been tallied
 // or increment the current number of votes
@@ -76,7 +78,7 @@ class RatingController extends Controller
                 $oldRating = $em->getRepository(get_class(new Rating()))->findOneBy(array('voteId' => $id));
                 $oldRating->setTotalVotes($added);
                 $oldRating->setTotalValue($sum);
-                $oldRating->setUsedIps("'" . $insertedIp . "'");
+                $oldRating->setUsedIps("" . $insertedIp . "");
                 $qb = $em->createQueryBuilder();
                 $em->persist($oldRating);
                 $em->flush($oldRating);
@@ -85,7 +87,7 @@ class RatingController extends Controller
                 $current_rating = $oldRating->getTotalValue();
             }
         } //end for the "if(!$voted)"
-        $tense = ($added == 1) ? "vote" : "votes"; //plural form votes/vote
+        $tense = ($added == 1) ?  $translator->trans('vote') :  $translator->trans('votes'); //plural form votes/vote
 
 // $new_back is what gets 'drawn' on your page after a successful 'AJAX/Javascript' vote
         if ($voted) {
@@ -101,20 +103,19 @@ class RatingController extends Controller
         }
 
         $new_back[] .= '<div class="total_votes"><p class="voted"> ';
-        if (!$voted) $new_back[] .= '<span class="thanks">Thanks</span>';
+        if (!$voted) $new_back[] .= '<span class="thanks">'.$translator->trans('Thanks').'</span>';
         else {
-            $new_back[] .= '<span class="invalid">already voted<
-/span>';
+            $new_back[] .= '<span class="invalid">'.$translator->trans('already voted').'</span>';
         }
         $votesNumbersCount = '';
         if ($count == 0) {
-            $new_back[] .= '0 votes' . '</p></div>';
+            $new_back[] .= '0 ' . $translator->trans('votes') . '</p></div>';
         } elseif ($count == 1) {
-            $new_back[] .= $count . ' vote' . '</p></div>';
+            $new_back[] .= $count . ' ' . $translator->trans('vote') . '</p></div>';
         } elseif ($count == 2) {
-            $new_back[] .= '2 voes' . '</p></div>';
+            $new_back[] .= $translator->trans('2 votes') . '</p></div>';
         } else {
-            $new_back[] .= $count . ' votes' . '</p></div>';
+            $new_back[] .= $count . ' ' . $translator->trans('votes') . '</p></div>';
         }
         $allnewback = join("\n", $new_back);
 

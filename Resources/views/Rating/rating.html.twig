@@ -10,13 +10,13 @@
     <div class="total_votes">
         <p class="voted">
             {% if rating.totalVotes==0 %}
-                0 votes
+                0 {% trans %}votes{% endtrans %}
             {% elseif rating.totalVotes==1 %}
-                1 vote
+                1 {% trans %}vote{% endtrans %}
             {% elseif rating.totalVotes==2 %}
-                2 votes
+                {% trans %}2 votes{% endtrans %}
             {% elseif rating.totalVotes>2 %}
-                {{ rating.totalVotes }} votes
+                {{ rating.totalVotes }} {% trans %}votes{% endtrans %}
             {% endif %}
         </p>
     </div>
